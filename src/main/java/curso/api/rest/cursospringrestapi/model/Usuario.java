@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 public class Usuario implements Serializable {
 
@@ -25,8 +27,30 @@ public class Usuario implements Serializable {
 
   private String nome;
 
+  @JsonManagedReference
   @OneToMany(mappedBy = "usuario", orphanRemoval = true, cascade = CascadeType.ALL)
   private List<Telefone> telefones;
+
+  public Usuario(){}
+
+  public Usuario(Long id){
+    this.id = id;
+  }
+
+  public Usuario(Long id, String login, String senha, String nome) {
+    this.id = id;
+    this.login = login;
+    this.senha = senha;
+    this.nome = nome;
+  }
+
+  public Usuario(Long id, String login, String senha, String nome, List<Telefone> telefones) {
+    this.id = id;
+    this.login = login;
+    this.senha = senha;
+    this.nome = nome;
+    this.telefones = telefones;
+  }
 
   public Long getId() {
     return id;
@@ -93,23 +117,5 @@ public class Usuario implements Serializable {
     return true;
   }
   
-  public Usuario(){
-
-  }
-
-  public Usuario(Long id, String login, String senha, String nome, List<Telefone> telefones) {
-    this.id = id;
-    this.login = login;
-    this.senha = senha;
-    this.nome = nome;
-    this.telefones = telefones;
-  }
-
-  public Usuario(Long id, String login, String senha, String nome) {
-    this.id = id;
-    this.login = login;
-    this.senha = senha;
-    this.nome = nome;
-  }
 
 }

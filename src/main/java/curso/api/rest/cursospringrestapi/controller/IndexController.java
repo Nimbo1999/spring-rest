@@ -27,9 +27,7 @@ public class IndexController {
 
   @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Usuario> create(@RequestBody Usuario user) {
-
     return ResponseEntity.ok(repo.save(user));
-
   }
 
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,13 +1,19 @@
 package curso.api.rest.cursospringrestapi.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
-public class Telefone {
+public class Telefone implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -15,8 +21,16 @@ public class Telefone {
 
   private String numero;
 
-  @ManyToOne(targetEntity = Usuario.class)
+  @JsonBackReference
+  @ManyToOne(targetEntity = Usuario.class, optional = false)
   private Usuario usuario;
+  
+  public Telefone(){}
+
+  public Telefone(String numero, Usuario usuario){
+    this.numero = numero;
+    this.usuario = usuario;
+  }
 
   public Telefone(Long id, String numero, Usuario usuario) {
     this.id = id;
