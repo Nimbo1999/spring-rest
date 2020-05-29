@@ -2,7 +2,7 @@
 
 ### Front-end instructions:
 
-### Para utilizar o front-end é necessário seguir os seguintes passos:
+#### Para utilizar o front-end é necessário seguir os seguintes passos:
 
 1. Instalar as dependências:
 ```
