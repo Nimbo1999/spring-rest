@@ -27,7 +27,7 @@ public class IndexController {
   @Autowired
   private UsuarioRepository repo;
 
-  @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Usuario> create(@RequestBody Usuario user) {
     return ResponseEntity.ok(repo.save(user));
   }
@@ -40,7 +40,7 @@ public class IndexController {
     return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
   }
 
-  @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Iterable<Usuario>> listar() {
     return ResponseEntity.ok(repo.findAll());
   }
@@ -51,7 +51,7 @@ public class IndexController {
     return new ResponseEntity<String>("{\"status\":\"200\", \"resp\":\"Usuário deletado com sucesso!\"}", HttpStatus.OK);
   }
 
-  @PutMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Usuario> alterarUsuario(@RequestBody Usuario user) {
     return new ResponseEntity<Usuario>(repo.save(user), HttpStatus.OK);
   }

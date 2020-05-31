@@ -1,7 +1,7 @@
 import React from 'react'
-import { Button, Tag } from 'antd'
+import { Button, Tag, Space } from 'antd'
 
-const columns = (deletarUser) => [
+const columns = (deletarUser, setLocalState, usuarios) => [
   {
     title: 'Nome',
     dataIndex: 'nome',
@@ -29,9 +29,27 @@ const columns = (deletarUser) => [
     title: 'Ações',
     dataIndex: 'id',
     key: 'id',
-    render: id => <Button key={id} type='primary' danger shape='round' onClick={() => deletarUser(id)}>
-      Deletar
-    </Button>
+    render: id => <Space>
+      <Button type='primary' shape='round' onClick={() => {
+          const user = usuarios.filter(usuario => usuario.id === id);
+          setLocalState({
+            addTrigger: true,
+            usuario: {
+              id: user[0].id,
+              nome: user[0].nome,
+              login: user[0].login,
+              senha: user[0].senha,
+              telefones: user[0].telefones.map(telefone => telefone.numero),
+            }
+          })
+        }}
+      >
+        Editar
+      </Button>
+      <Button key={id} type='primary' danger shape='round' onClick={() => deletarUser(id)}>
+        Deletar
+      </Button>
+    </Space>
   }
 ]
 

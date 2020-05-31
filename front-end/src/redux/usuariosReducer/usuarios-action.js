@@ -58,3 +58,22 @@ export const deletarUser = id => async (dispatch, getState) => {
     dispatch(handleChange(user, 'FETCH_USUARIOS_USUARIOS'))
   })
 }
+
+// Alterar Usuario
+export const alterarUser = usuario => async (dispatch, getState) => {
+  const { usuarios } = getState()
+  const body = {
+    id: usuario.id,
+    nome: usuario.nome,
+    login: usuario.login,
+    senha: usuario.senha,
+    telefones: telefonesFormater(usuario.telefones)
+  }
+  await fetch('http://localhost:8080/curso-api/usuario', {body: JSON.stringify(body), method: 'put', headers: new Headers({'Content-Type': 'application/json'})})
+  .then(resp => resp.json())
+  .then(data => {
+    notification.success({message: `Usuario ${data.nome} alterado com sucesso!`})
+    usuario = usuarios.filter(user => user.id === usuario.id).shift()
+    dispatch(handleChange(usuarios.map(user => user.id === usuario.id ? data : user), 'FETCH_USUARIOS_USUARIOS'))
+  })
+}
