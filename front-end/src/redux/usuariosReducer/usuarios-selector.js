@@ -1,0 +1,1 @@
+export const selectUsuariosReducer = state => state.usuarios

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Form, Input, Button, Select, notification } from 'antd'
+// Redux
+import { connect } from 'react-redux'
+import { selectUsuariosReducer } from './redux/usuariosReducer/usuarios-selector'
+import { handleChange } from './redux/usuariosReducer/usuarios-action'
+import { createStructuredSelector } from 'reselect'
 import './App.css';
 
 // Funçâo para formatar os números
@@ -10,9 +15,8 @@ function telefonesFormater(telefones) {
 }
 
 // Component React
-function App() {
+function App({usuarios, handleChange}) {
 
-  const [ usuarios, setUsuarios ] = useState();
   const [ localState, setLocalState ] = useState({
     addTrigger: false,
     usuario: {
@@ -42,26 +46,29 @@ function App() {
           
           default:
           notification.success({message: 'Sucesso!', description: `Usuario ${data.nome} incluido com sucesso.`})
-          setUsuarios([...usuarios, data])
+          handleChange([...usuarios, data], 'FETCH_USUARIOS_USUARIOS');
           setLocale({...localState, addTrigger: false})
           break;
       }
-      console.log(data)
     })
   }
 
   async function deletarUser(id) {
     await fetch(`http://localhost:8080/curso-api/usuario/${id}`, { method: 'delete' })
     .then(resp => resp.json())
-    .then(data => notification.success({message: data.resp}))
+    .then(data => {
+      notification.success({message: data.resp})
+      const user = usuarios.filter(user => user.id !== id)
+      handleChange(user, 'FETCH_USUARIOS_USUARIOS')
+    })
   }
 
 
   useEffect(() => {
     fetch('http://localhost:8080/curso-api/usuario/', {mode: 'cors', method: 'GET'})
     .then(resp => resp.json())
-    .then(data => {console.log(data);setUsuarios(data)})
-  }, []);
+    .then(data => handleChange(data, 'FETCH_USUARIOS_USUARIOS'))
+  }, [handleChange]);
 
   return (
     <div className="App">
@@ -107,7 +114,7 @@ function App() {
                 ))
                 :
                 <tr>
-                  <td colSpan='3' className='spinner-container'>
+                  <td colSpan='4' className='spinner-container'>
                     <span className='spin'>Carregando...</span>
                   </td>
                 </tr>
@@ -193,4 +200,12 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = createStructuredSelector({
+  usuarios: selectUsuariosReducer
+})
+
+const mapDispatchToProps = dispatch => ({
+  handleChange: (item, type) => dispatch(handleChange(item,type))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
