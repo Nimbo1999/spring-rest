@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import curso.api.rest.cursospringrestapi.service.ImplementacaoUserDetailsService;
@@ -22,12 +23,17 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter {
   /** Configura as solicitações de acesso por http */
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+
     /** Ativando a proteção contra usuários que não estão validados por token */
     http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
     /** Ativando as restrições a URL */
     .disable().authorizeRequests().antMatchers("/").permitAll()
     /** URL de Logout - Redireciona após o user deslogar do sistema */
-    .anyRequest().authenticated().and().logout().logoutUrl("/logout");
+    .anyRequest().authenticated().and().logout().logoutUrl("/logout")
+    /** Filtra requisições de login para autenticação */
+    .and().addFilterBefore(new JWTLoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
+    /** Filtra demais requisições para verificar a presença do JWT no header HTTP */
+    .addFilterBefore(new JwtApiAutenticacaoFilter(), UsernamePasswordAuthenticationFilter.class);
   }
 
   @Override
