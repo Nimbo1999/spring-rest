@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-// import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +29,7 @@ public class IndexController {
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Usuario> create(@RequestBody Usuario user) {
 
-    // user.setSenha(BCrypt.hashpw(user.getSenha(), BCrypt.gensalt("md5")));
-
-    // System.out.println("Senha Hash md5: " + user.getSenha());
+    user.setSenha(new BCryptPasswordEncoder().encode(user.getSenha()));
 
     return ResponseEntity.ok(repo.save(user));
   }
@@ -57,6 +55,9 @@ public class IndexController {
 
   @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Usuario> alterarUsuario(@RequestBody Usuario user) {
+
+    user.setSenha(new BCryptPasswordEncoder().encode(user.getSenha()));
+
     return new ResponseEntity<Usuario>(repo.save(user), HttpStatus.OK);
   }
 
