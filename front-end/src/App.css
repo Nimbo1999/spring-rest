@@ -37,3 +37,13 @@ h2 {
   font-weight: bold;
   animation: opacityAnimation 1500ms infinite;
 }
+
+.content-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pt-2 {
+  padding: 2em;
+}

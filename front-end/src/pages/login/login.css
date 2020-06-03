@@ -1,0 +1,15 @@
+.spin-loading {
+  transition: all linear 300ms;
+  width: 0px;
+  opacity: 0;
+}
+
+.spin-loading.false {
+  width: 0px;
+  opacity: 0;
+}
+
+.spin-loading.true {
+  width: 15px;
+  opacity: 1;
+}

@@ -1,9 +1,5 @@
 import { notification } from 'antd'
-
-export const handleChange = (item, type) => ({
-  type,
-  payload: item
-})
+import { handleChange } from '../actions'
 
 // Funçâo para formatar os números
 function telefonesFormater(telefones) {

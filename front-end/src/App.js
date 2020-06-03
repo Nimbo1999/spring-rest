@@ -1,83 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Form, Input, Button, Select, Layout, Breadcrumb, Card, notification } from 'antd'
+import React from 'react';
+import { Layout, Breadcrumb } from 'antd'
+import { Switch, Route } from 'react-router-dom'
+import { Routes } from './router'
+// Components
+import { Header } from './components'
 // Redux
 import { connect } from 'react-redux'
-import { handleChange, salvarUsuario, alterarUser } from './redux/usuariosReducer/usuarios-action'
-// Components
-import { Header, TabelaUsuarios } from './components'
+import { selectUserAuthenticated } from './redux/userReducer/user.selector'
+import { createStructuredSelector } from 'reselect'
+
 import './App.css';
 
 const { Content } = Layout
 
 // Component React
-function App({ handleChange, salvarUsuario, alterarUser }) {
-
-  const [localState, setLocalState] = useState({
-    addTrigger: false,
-    usuario: {
-      nome: '',
-      login: '',
-      senha: '',
-      telefones: [],
-    },
-  });
-
-  useEffect(() => {
-    fetch('http://localhost:8080/curso-api/usuario', { mode: 'cors', method: 'GET' })
-      .then(resp => resp.json())
-      .then(data => handleChange(data, 'FETCH_USUARIOS_USUARIOS'))
-      .catch(e => notification.error({ message: 'Servidor offline', description: 'O servidor para o qual buscamos os dados está temporariamento fechado.' }))
-  }, [handleChange]);
-
-  const actions = (
-    localState.usuario.id ?
-      [
-        <Button type='default' danger size='large' onClick={() => setLocalState({
-          usuario: {
-            nome: '',
-            login: '',
-            senha: '',
-            telefones: [],
-          },
-          addTrigger: false
-        })}>
-          Cancelar
-        </Button>,
-        <Button type='primary' size='large' onClick={async () => {
-          await alterarUser(localState.usuario)
-          setLocalState({
-            usuario: {
-              nome: '',
-              login: '',
-              senha: '',
-              telefones: [],
-            },
-            addTrigger: false
-          })
-        }}>
-          Confirmar
-        </Button>
-      ]
-      :
-      [
-        <Button type='default' danger size='large' onClick={() => setLocalState({
-          usuario: {
-            nome: '',
-            login: '',
-            senha: '',
-            telefones: [],
-          },
-          addTrigger: false
-        })}>
-          Cancelar
-        </Button>,
-        <Button type='primary' size='large' onClick={async () => {
-          await salvarUsuario(setLocalState, localState.usuario)
-        }}>
-          Confirmar
-        </Button>
-      ]
-  )
+function App({ userAuthenticated }) {
 
   return (
     <Layout className="App">
@@ -88,70 +25,19 @@ function App({ handleChange, salvarUsuario, alterarUser }) {
           <Breadcrumb.Item>Usuarios</Breadcrumb.Item>
         </Breadcrumb>
         <div className='content'>
-          {
-            localState.addTrigger ?
-              <div style={{ width: '100%', padding: '10px 40px' }}>
-                <Card
-                  title='Inserir novo Usuário'
-                  actions={actions}
-                >
-                  <Form layout='vertical'>
-                    <Row gutter={16}>
-                      <Col xs={24} md={12}>
-                        <Form.Item label='Nome:'>
-                          <Input
-                            value={localState.usuario.nome}
-                            onChange={e => setLocalState({ ...localState, usuario: { ...localState.usuario, nome: e.target.value } })}
-                            type='text'
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item label='Login:'>
-                          <Input
-                            value={localState.usuario.login}
-                            onChange={e => setLocalState({ ...localState, usuario: { ...localState.usuario, login: e.target.value } })}
-                            type='text'
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item label='Senha:'>
-                          <Input
-                            value={localState.usuario.senha}
-                            onChange={e => setLocalState({ ...localState, usuario: { ...localState.usuario, senha: e.target.value } })}
-                            type='password'
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item label='Telefone(s):'>
-                          <Select
-                            mode='tags'
-                            onChange={e => setLocalState({ ...localState, usuario: { ...localState.usuario, telefones: e } })}
-                            value={localState.usuario.telefones}
-                            allowClear
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Card>
-              </div>
-              :
-              null
-          }
-          <TabelaUsuarios setLocalState={setLocalState} localState={localState} />
+          <Switch>
+            {
+              Routes(userAuthenticated).map((route, i) => <Route key={i} {...route} />)
+            }
+          </Switch>
         </div>
       </Content>
     </Layout>
   );
 }
 
-const mapDispatchToProps = dispatch => ({
-  handleChange: (item, type) => dispatch(handleChange(item, type)),
-  salvarUsuario: (setLocale, usuario) => dispatch(salvarUsuario(setLocale, usuario)),
-  alterarUser: usuario => dispatch(alterarUser(usuario))
+const mapStateToProps = createStructuredSelector({
+  userAuthenticated: selectUserAuthenticated
 })
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,10 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     /** Pega o usuário do nosso token */
     Usuario user = new ObjectMapper()
       .readValue(request.getInputStream(), Usuario.class);
+
+      response.addHeader("Access-Control-Allow-Origin", "*");
+      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+      response.getWriter().write("{\"message\": \"Usuário não foi encontrado\"}");
 
     return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
   }
