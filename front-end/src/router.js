@@ -1,12 +1,13 @@
+import React from 'react'
+import { Redirect } from 'react-router-dom'
 import { LoginPage, UsuariosPage } from './pages'
 
 export const Routes = userAuthenticated => {
   return [
     {
       path: '/usuarios',
-      render: props => {
-        const { history } = props
-        return userAuthenticated ? UsuariosPage : history.replace('/')
+      render: () => {
+        return userAuthenticated ? <UsuariosPage /> : <Redirect to='/' />
       }
     },
     {

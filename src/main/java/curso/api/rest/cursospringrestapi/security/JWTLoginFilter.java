@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,29 +32,37 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-  throws AuthenticationException, IOException, ServletException {
+      throws AuthenticationException, IOException, ServletException {
 
     /** Pega o usuário do nosso token */
-    Usuario user = new ObjectMapper()
-      .readValue(request.getInputStream(), Usuario.class);
+    Usuario user = new ObjectMapper().readValue(request.getInputStream(), Usuario.class);
 
-      response.addHeader("Access-Control-Allow-Origin", "*");
-      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-      response.getWriter().write("{\"message\": \"Usuário não foi encontrado\"}");
+    return getAuthenticationManager()
+      .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
-    return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
   }
 
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-  Authentication authResult) throws IOException, ServletException {
+      Authentication authResult) throws IOException, ServletException {
 
     try {
       new JWTTokenAutenticacaoService().addAuthentication(response, authResult.getName());
     } catch (Exception e) {
       System.err.println("Mensagem: " + e.getMessage() + " StackTrace: " + e.getStackTrace());
     }
-
   }
+
+  @Override
+  protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+  AuthenticationException failed) throws IOException, ServletException {
+    if (response.getHeader("Access-Control-Allow-Origin") == null) {
+      response.addHeader("Access-Control-Allow-Origin", "*");
+    }
+    response.setStatus(403);
+    response.getWriter().write("{\"message\": \"Usuario e ou senha incorretos.\", \"status\": 403}");
+  }
+
+  
   
 }

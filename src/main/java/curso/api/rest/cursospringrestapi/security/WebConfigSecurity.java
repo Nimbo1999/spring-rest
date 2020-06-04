@@ -2,6 +2,7 @@ package curso.api.rest.cursospringrestapi.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import curso.api.rest.cursospringrestapi.service.ImplementacaoUserDetailsService;
 
@@ -25,11 +27,11 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
 
     /** Ativando a proteção contra usuários que não estão validados por token */
-    http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-    /** Ativando as restrições a URL */
-    .disable().authorizeRequests().antMatchers("/").permitAll()
+    http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).disable()
+    .authorizeRequests().antMatchers("/").permitAll()
+    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
     /** URL de Logout - Redireciona após o user deslogar do sistema */
-    .anyRequest().authenticated().and().logout().logoutUrl("/logout")
+    .anyRequest().authenticated().and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
     /** Filtra requisições de login para autenticação */
     .and().addFilterBefore(new JWTLoginFilter("/login", authenticationManager()), UsernamePasswordAuthenticationFilter.class)
     /** Filtra demais requisições para verificar a presença do JWT no header HTTP */

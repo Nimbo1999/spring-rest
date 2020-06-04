@@ -39,20 +39,25 @@ public class JWTTokenAutenticacaoService {
     .compact();
 
     /** Junta o Prefixo com o JWT */
-    String token = TOKEN_PREFIX + " " + JWT; /* Bearer ah87eh4t8eh48h8h48eh... */
+    String token = TOKEN_PREFIX + " " + JWT; /* Bearer ah87eh4t8eh48h8h48eh... */ 
 
-    response.setHeader(HEADER_STRING, token);
-    response.getWriter().write("{\"Authorization\": \""+ token +"\"}");
+    response.addHeader(HEADER_STRING, token);
+    liberarCors(response);
+    // Usuario user = repo.findUserByLogin(username);
+    // System.out.println(user.getNome());
+    response.getWriter()
+    .write("{\"isAuthenticated\": true, \"Authorization\": \""+token+"\"}");
 
   }
 
-  public Authentication getAuthentication(HttpServletRequest request) {
+  public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
     /** Pega o token enviado no cabeçalho http */
     String token = request.getHeader(HEADER_STRING);
 
     if (token != null) {
 
-      String user = Jwts.parser().setSigningKey(SECRET)
+      String user = Jwts.parser()
+        .setSigningKey(SECRET)
         .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
         .getBody()
         .getSubject();
@@ -73,6 +78,27 @@ public class JWTTokenAutenticacaoService {
         }
       }
     }
+    liberarCors(response);
     return null;
+  }
+
+  private void liberarCors(HttpServletResponse response) {
+
+    if (response.getHeader("Access-Control-Allow-Origin") == null) {
+      response.addHeader("Access-Control-Allow-Origin", "*");
+    }
+
+    if (response.getHeader("Access-Control-Allow-Headers") == null) {
+      response.addHeader("Access-Control-Allow-Headers", "*");
+    }
+
+    if (response.getHeader("Access-Control-Request-Headers") == null) {
+      response.addHeader("Access-Control-Request-Headers", "*");
+    }
+
+    if (response.getHeader("Access-Control-Allow-Methods") == null) {
+      response.addHeader("Access-Control-Allow-Methods", "*");
+    }
+
   }
 }

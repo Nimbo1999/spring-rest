@@ -33,6 +33,11 @@ public class DemoApplication implements WebMvcConfigurer {
 		.allowedMethods("*")
 		.allowedOrigins("http://localhost:3000");
 
+		registry.addMapping("/login")
+		.allowedMethods("POST")
+		.allowedOrigins("http://localhost:3000")
+		.allowedHeaders("content-type");
+
 		WebMvcConfigurer.super.addCorsMappings(registry);
 	}
 

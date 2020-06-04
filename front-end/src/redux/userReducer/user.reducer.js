@@ -1,6 +1,7 @@
 const INITIAL_STATE = {
   user: {
     isAuthenticated: false,
+    token: '',
     username: '',
     password: ''
   },
@@ -37,8 +38,9 @@ const UserReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         user: {
-          isAuthenticated: true,
-          ...payload
+          ...state.user,
+          isAuthenticated: payload.isAuthenticated,
+          token: payload.Authorization
         }
       }
     }

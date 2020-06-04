@@ -5,10 +5,11 @@ import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 import { selectUserAuthenticated } from '../../redux/userReducer/user.selector'
+import { FazerLogof } from '../../redux/userReducer/user.action'
 
 const { Header } = Layout
 
-const HeaderApp = ({ isAuthenticated, match }) => {
+const HeaderApp = ({ isAuthenticated, match, FazerLogof }) => {
   const { path } = match
 
   const [ menuKey, setMenuKey ] = useState(['/'])
@@ -31,10 +32,8 @@ const HeaderApp = ({ isAuthenticated, match }) => {
         </Menu.Item>
         {
           isAuthenticated ?
-            <Menu.Item key='/logout' disabled>
-              <Link to='/logout'>
-                Logout
-              </Link>
+            <Menu.Item key='/logout' onClick={() => FazerLogof()}>
+              Logout
             </Menu.Item>
           :
           null
@@ -48,4 +47,8 @@ const mapStateToProps = createStructuredSelector({
   isAuthenticated: selectUserAuthenticated
 })
 
-export default withRouter(connect(mapStateToProps)(HeaderApp));
+const mapDispatchToProps = dispatch => ({
+  FazerLogof: () => dispatch(FazerLogof())
+})
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HeaderApp));

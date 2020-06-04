@@ -10,14 +10,17 @@ function telefonesFormater(telefones) {
 
 // Salvar Usuario
 export const salvarUsuario = (setLocale, usuario) => async (dispatch, getState) => {
-  const { usuarios } = getState()
+  const { usuarios, user : { user: { token } } } = getState()
   const body = {
     nome: usuario.nome,
     login: usuario.login,
     senha: usuario.senha,
     telefones: telefonesFormater(usuario.telefones)
   }
-  await fetch('http://localhost:8080/curso-api/usuario/', {body: JSON.stringify(body), method: 'post', headers: new Headers({'Content-Type': 'application/json'})})
+  await fetch('http://localhost:8080/curso-api/usuario/', {body: JSON.stringify(body), method: 'post', headers: new Headers({
+    'Content-Type': 'application/json',
+    Authorization: token
+  })})
   .then(resp => resp.json())
   .then(data => {
     const { status, message } = data
@@ -45,8 +48,8 @@ export const salvarUsuario = (setLocale, usuario) => async (dispatch, getState) 
 
 // Delete Usuario
 export const deletarUser = id => async (dispatch, getState) => {
-  const { usuarios } = getState()
-  await fetch(`http://localhost:8080/curso-api/usuario/${id}`, { method: 'delete' })
+  const { usuarios, user: { user: { token } } } = getState()
+  await fetch(`http://localhost:8080/curso-api/usuario/${id}`, { method: 'delete', headers: new Headers({Authorization: token}) })
   .then(resp => resp.json())
   .then(data => {
     notification.success({message: data.resp})
@@ -57,7 +60,7 @@ export const deletarUser = id => async (dispatch, getState) => {
 
 // Alterar Usuario
 export const alterarUser = usuario => async (dispatch, getState) => {
-  const { usuarios } = getState()
+  const { usuarios, user: { user: { token } } } = getState()
   const body = {
     id: usuario.id,
     nome: usuario.nome,
@@ -65,7 +68,10 @@ export const alterarUser = usuario => async (dispatch, getState) => {
     senha: usuario.senha,
     telefones: telefonesFormater(usuario.telefones)
   }
-  await fetch('http://localhost:8080/curso-api/usuario', {body: JSON.stringify(body), method: 'put', headers: new Headers({'Content-Type': 'application/json'})})
+  await fetch('http://localhost:8080/curso-api/usuario', {body: JSON.stringify(body), method: 'put', headers: new Headers({
+    'Content-Type': 'application/json',
+    Authorization: token
+  })})
   .then(resp => resp.json())
   .then(data => {
     notification.success({message: `Usuario ${data.nome} alterado com sucesso!`})

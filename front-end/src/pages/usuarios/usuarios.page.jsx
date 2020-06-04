@@ -6,17 +6,19 @@ import { TabelaUsuarios } from '../../components'
 // Redux
 import { connect } from 'react-redux'
 import { salvarUsuario, alterarUser } from '../../redux/usuariosReducer/usuarios-action'
+import { selectToken } from '../../redux/userReducer/user.selector'
 import { handleChange } from '../../redux/actions'
+import { createStructuredSelector } from 'reselect'
 
 // Route: /usuarios
-const UsuariosPage = ({ handleChange, salvarUsuario, alterarUser }) => {
+const UsuariosPage = ({ handleChange, salvarUsuario, alterarUser, token }) => {
 
   useEffect(() => {
-    fetch('http://localhost:8080/curso-api/usuario', { mode: 'cors', method: 'GET' })
+    fetch('http://localhost:8080/curso-api/usuario', { mode: 'cors', method: 'GET', headers: new Headers({Authorization: token}) })
       .then(resp => resp.json())
       .then(data => handleChange(data, 'FETCH_USUARIOS_USUARIOS'))
       .catch(e => notification.error({ message: 'Servidor offline', description: 'O servidor para o qual buscamos os dados está temporariamento fechado.' }))
-  }, [handleChange]);
+  }, [handleChange, token]);
 
   const [localState, setLocalState] = useState({
     addTrigger: false,
@@ -138,10 +140,14 @@ const UsuariosPage = ({ handleChange, salvarUsuario, alterarUser }) => {
   );
 }
 
+const mapStateToProps = createStructuredSelector({
+  token: selectToken
+})
+
 const mapDispatchToProps = dispatch => ({
   handleChange: (item, type) => dispatch(handleChange(item, type)),
   salvarUsuario: (setLocale, usuario) => dispatch(salvarUsuario(setLocale, usuario)),
   alterarUser: usuario => dispatch(alterarUser(usuario))
 })
 
-export default connect(null, mapDispatchToProps)(UsuariosPage)
+export default connect(mapStateToProps, mapDispatchToProps)(UsuariosPage)
